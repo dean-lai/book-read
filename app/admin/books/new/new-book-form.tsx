@@ -6,7 +6,12 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { generateSummaryAction, saveBookAction } from "@/actions/admin-books";
+import {
+  extractBookTextAction,
+  generateSummaryAction,
+  saveBookWithFileAction,
+} from "@/actions/admin-books";
+import { MAX_BOOK_UPLOAD_WORDS } from "@/lib/book-upload-limits";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -49,7 +54,7 @@ export function NewBookForm({
 }: {
   categories: CategoryOption[];
 }) {
-  const [rawText, setRawText] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [titleHint, setTitleHint] = useState("");
   const [authorHint, setAuthorHint] = useState("");
   const [genMessage, setGenMessage] = useState<string | null>(null);
@@ -69,10 +74,21 @@ export function NewBookForm({
   });
 
   function handleGenerate() {
+    if (!selectedFile) {
+      setGenMessage("Please upload an ebook file first.");
+      return;
+    }
     setGenMessage(null);
     startGenerate(async () => {
+      const data = new FormData();
+      data.append("file", selectedFile);
+      const extracted = await extractBookTextAction(data);
+      if (!extracted.ok) {
+        setGenMessage(extracted.message);
+        return;
+      }
       const result = await generateSummaryAction({
-        rawText,
+        rawText: extracted.text,
         titleHint: titleHint.trim() || undefined,
         authorHint: authorHint.trim() || undefined,
       });
@@ -87,18 +103,23 @@ export function NewBookForm({
 
   function onSubmit(values: SaveFields) {
     setSaveError(null);
-    const payload = {
-      title: values.title.trim(),
-      author: values.author.trim(),
-      summaryContent: values.summaryContent.trim(),
-      categoryId:
-        values.categoryId === "__none__" || !values.categoryId?.trim()
-          ? undefined
-          : values.categoryId,
-    };
-
+    if (!selectedFile) {
+      setSaveError("Ebook file is required.");
+      return;
+    }
     startSave(async () => {
-      const result = await saveBookAction(payload);
+      const data = new FormData();
+      data.append("title", values.title.trim());
+      data.append("author", values.author.trim());
+      data.append("summaryContent", values.summaryContent.trim());
+      data.append(
+        "categoryId",
+        values.categoryId === "__none__" || !values.categoryId?.trim()
+          ? ""
+          : values.categoryId,
+      );
+      data.append("file", selectedFile);
+      const result = await saveBookWithFileAction(data);
       if (
         result &&
         typeof result === "object" &&
@@ -116,11 +137,26 @@ export function NewBookForm({
         <CardHeader>
           <CardTitle>Smart ingestion</CardTitle>
           <CardDescription>
-            Paste raw notes or excerpts. Optional hints help when the text does
-            not name the book clearly.
+            Upload an ebook file (EPUB/PDF/TXT/MD). Extracted text must be at
+            most {MAX_BOOK_UPLOAD_WORDS.toLocaleString()} words. We will extract
+            text and generate the summary directly from the file.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="grid gap-3 rounded-md border p-3">
+            <label className="text-sm font-medium" htmlFor="book-file">
+              Ebook file
+            </label>
+            <Input
+              id="book-file"
+              type="file"
+              accept=".epub,.pdf,.txt,.md,.markdown"
+              onChange={(e) => {
+                setSelectedFile(e.target.files?.[0] ?? null);
+                setGenMessage(null);
+              }}
+            />
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium" htmlFor="title-hint">
@@ -145,29 +181,17 @@ export function NewBookForm({
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="raw-text">
-              Raw content
-            </label>
-            <Textarea
-              id="raw-text"
-              value={rawText}
-              onChange={(e) => setRawText(e.target.value)}
-              placeholder="Paste chapters, notes, or highlights…"
-              className="min-h-40 font-mono text-sm"
-            />
-          </div>
           <div className="flex flex-wrap items-center gap-3">
             <Button
               type="button"
               variant="secondary"
-              disabled={isGenerating || !rawText.trim()}
+              disabled={isGenerating || !selectedFile}
               onClick={handleGenerate}
             >
               {isGenerating ? (
                 <>
                   <Loader2Icon className="animate-spin" />
-                  Generating…
+                  Extracting and generating…
                 </>
               ) : (
                 "Generate summary"
@@ -282,7 +306,7 @@ export function NewBookForm({
                 <p className="text-destructive text-sm">{saveError}</p>
               )}
 
-              <Button type="submit" disabled={isSaving}>
+              <Button type="submit" disabled={isSaving || !selectedFile}>
                 {isSaving ? (
                   <>
                     <Loader2Icon className="animate-spin" />

@@ -56,6 +56,29 @@ export const books = pgTable(
   (t) => [index("books_category_id_idx").on(t.categoryId)],
 );
 
+export const bookChunks = pgTable(
+  "book_chunks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    bookId: uuid("book_id")
+      .notNull()
+      .references(() => books.id, { onDelete: "cascade" }),
+    chunkIndex: integer("chunk_index").notNull(),
+    content: text("content").notNull(),
+    contentHash: text("content_hash").notNull(),
+    tokenCount: integer("token_count"),
+    embedding: vector("embedding", { dimensions: EMBEDDING_DIMENSIONS }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    index("book_chunks_book_id_chunk_index_idx").on(t.bookId, t.chunkIndex),
+    index("book_chunks_embedding_idx").using("hnsw", t.embedding.op("vector_cosine_ops")),
+    uniqueIndex("book_chunks_book_id_content_hash_key").on(t.bookId, t.contentHash),
+  ],
+);
+
 export const userBooks = pgTable(
   "user_books",
   {

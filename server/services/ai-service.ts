@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export type SummarizeInput = {
   /** Optional hints when raw text does not include title/author */
@@ -19,15 +19,26 @@ Rules:
 - Tone: professional, clear, and insightful.
 - Do not wrap the output in code fences.`;
 
+const DEFAULT_MODEL = "gemini-2.5-flash";
+
 export async function summarizeBookContent(
   input: SummarizeInput,
 ): Promise<{ summary: string }> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not set");
+    throw new Error("GEMINI_API_KEY is not set");
   }
 
-  const client = new OpenAI({ apiKey });
+  const modelName = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: modelName,
+    systemInstruction: SYSTEM_PROMPT,
+    generationConfig: {
+      temperature: 0.4,
+    },
+  });
 
   const hints =
     input.titleHint || input.authorHint
@@ -36,18 +47,10 @@ export async function summarizeBookContent(
 
   const userContent = `${hints}\n\n---\n\n${input.rawText}`.trim();
 
-  const completion = await client.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userContent },
-    ],
-    temperature: 0.4,
-  });
-
-  const summary = completion.choices[0]?.message?.content?.trim();
+  const result = await model.generateContent(userContent);
+  const summary = result.response.text().trim();
   if (!summary) {
-    throw new Error("OpenAI returned an empty summary");
+    throw new Error("Gemini returned an empty summary");
   }
 
   return { summary };
