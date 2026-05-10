@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import * as categoriesRepository from "@/repositories/categories-repository";
+import * as categoriesRepository from "@/server/repositories/categories-repository";
 import { slugify } from "@/lib/slugify";
 
 const createSchema = z.object({
@@ -24,7 +24,7 @@ async function uniqueSlug(
   baseSlug: string,
   excludeCategoryId?: string,
 ): Promise<string> {
-  let slug = baseSlug || "category";
+  const slug = baseSlug || "category";
   let suffix = 0;
   while (true) {
     const candidate = suffix === 0 ? slug : `${slug}-${suffix}`;

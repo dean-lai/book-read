@@ -8,7 +8,8 @@ export type TtsInput = {
 };
 
 export async function synthesizeSpeech(
-  _input: TtsInput,
+  input: TtsInput,
 ): Promise<{ audioUrl: string }> {
+  void input;
   throw new Error("tts-service: synthesizeSpeech not implemented");
 }

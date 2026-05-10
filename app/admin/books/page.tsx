@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Suspense } from "react";
 
 import {
   Card,
@@ -8,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -16,64 +16,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAdminDashboardData } from "@/server/services/admin-dashboard-service";
+import { listBooksWithCategory } from "@/server/repositories/books-repository";
 
-export default function AdminDashboardPage() {
+export default async function AdminBooksPage() {
+  const books = await listBooksWithCategory();
+
   return (
-    <Suspense
-      fallback={
-        <div className="text-muted-foreground mx-auto max-w-4xl p-6 text-sm">
-          Loading dashboard…
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">Books</h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            All summaries in the catalog
+          </p>
         </div>
-      }
-    >
-      <AdminDashboardContent />
-    </Suspense>
-  );
-}
-
-async function AdminDashboardContent() {
-  const { totalBooks, missingEmbedding, recent } =
-    await getAdminDashboardData();
-
-  return (
-    <div className="mx-auto max-w-4xl space-y-8">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total books</CardDescription>
-            <CardTitle className="text-3xl tabular-nums">
-              {totalBooks}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm">
-              Summaries stored in the catalog
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Missing embedding</CardDescription>
-            <CardTitle className="text-3xl tabular-nums">
-              {missingEmbedding}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm">
-              Not yet vector-indexed (optional RAG pipeline)
-            </p>
-          </CardContent>
-        </Card>
+        <Button asChild>
+          <Link href="/admin/books/new">Add book</Link>
+        </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent books</CardTitle>
-          <CardDescription>Newest entries in the database</CardDescription>
+          <CardTitle>Library</CardTitle>
+          <CardDescription>
+            Newest first. Open an entry from the dashboard or use{" "}
+            <Link
+              href="/admin/books/new"
+              className="text-primary font-medium underline-offset-4 hover:underline"
+            >
+              New book
+            </Link>{" "}
+            to add more.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          {recent.length === 0 ? (
+          {books.length === 0 ? (
             <p className="text-muted-foreground text-sm">
               No books yet.{" "}
               <Link
@@ -94,7 +71,7 @@ async function AdminDashboardContent() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {recent.map((row) => (
+                {books.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell className="font-medium">
                       <Link
@@ -119,4 +96,3 @@ async function AdminDashboardContent() {
     </div>
   );
 }
-

@@ -9,7 +9,8 @@ export type RagQueryInput = {
 };
 
 export async function queryBookRag(
-  _input: RagQueryInput,
+  input: RagQueryInput,
 ): Promise<{ reply: string }> {
+  void input;
   throw new Error("rag-service: queryBookRag not implemented");
 }

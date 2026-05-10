@@ -5,7 +5,7 @@ import {
   createCategoryFromAdmin,
   deleteCategoryFromAdmin,
   updateCategoryFromAdmin,
-} from "@/services/admin-categories-service";
+} from "@/server/services/admin-categories-service";
 
 export async function createCategoryAction(input: unknown) {
   await requireAdmin();

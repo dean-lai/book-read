@@ -20,6 +20,8 @@
       }
     ],
     "paths": {
+      "@/features/*": ["./features/*"],
+      "@/server/*": ["./server/*"],
       "@/*": ["./*"]
     }
   },

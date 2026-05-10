@@ -3,7 +3,7 @@ import {
   countBooksMissingEmbedding,
   listRecentWithCategory,
   type BookRowWithCategory,
-} from "@/repositories/books-repository";
+} from "@/server/repositories/books-repository";
 
 export type AdminDashboardData = {
   totalBooks: number;

@@ -8,7 +8,7 @@ import {
   deleteBookFromAdmin,
   generateSummaryForAdmin,
   updateBookFromAdmin,
-} from "@/services/admin-books-service";
+} from "@/server/services/admin-books-service";
 
 export async function generateSummaryAction(input: unknown) {
   await requireAdmin();

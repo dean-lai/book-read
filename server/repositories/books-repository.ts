@@ -81,3 +81,18 @@ export async function listRecentWithCategory(
     .orderBy(desc(books.createdAt))
     .limit(limit);
 }
+
+export async function listBooksWithCategory(): Promise<BookRowWithCategory[]> {
+  const db = getDb();
+  return db
+    .select({
+      id: books.id,
+      title: books.title,
+      author: books.author,
+      createdAt: books.createdAt,
+      categoryName: categories.name,
+    })
+    .from(books)
+    .leftJoin(categories, eq(books.categoryId, categories.id))
+    .orderBy(desc(books.createdAt));
+}

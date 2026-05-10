@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import * as booksRepository from "@/repositories/books-repository";
-import { summarizeBookContent } from "@/services/ai-service";
+import * as booksRepository from "@/server/repositories/books-repository";
+import { summarizeBookContent } from "@/server/services/ai-service";
 
 const generateSummarySchema = z.object({
   rawText: z.string().min(1, "Paste some raw content"),

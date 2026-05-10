@@ -1,8 +1,28 @@
+import { Suspense } from "react";
+
 import { requireAdmin } from "@/lib/admin/require-admin";
 
 import { AdminSidebar } from "./admin-sidebar";
 
-export default async function AdminLayout({
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="text-muted-foreground flex min-h-screen items-center justify-center p-6 text-sm">
+          Loading admin…
+        </div>
+      }
+    >
+      <AdminLayoutInner>{children}</AdminLayoutInner>
+    </Suspense>
+  );
+}
+
+async function AdminLayoutInner({
   children,
 }: {
   children: React.ReactNode;
