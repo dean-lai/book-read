@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "seed:categories": "tsx scripts/seed-categories.ts",
     "ingest:book-rag": "tsx scripts/ingest-book-rag.ts",
-    "test:rag": "tsx --test server/services/__tests__/*.test.ts"
+    "test:rag": "tsx --test server/**/__tests__/*.test.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -25,6 +25,7 @@
     "epub2": "^3.0.2",
     "lucide-react": "^0.511.0",
     "next": "latest",
+    "next-intl": "^4.11.1",
     "next-themes": "^0.4.6",
     "pdf-parse": "^2.4.5",
     "pg": "^8.20.0",

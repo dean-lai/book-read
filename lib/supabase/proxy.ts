@@ -1,20 +1,47 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+
+import { routing } from "@/i18n/routing";
 import { hasEnvVars } from "../utils";
+
+function stripLocalePrefix(pathname: string): string {
+  for (const locale of routing.locales) {
+    const prefix = `/${locale}`;
+    if (pathname === prefix) {
+      return "/";
+    }
+    if (pathname.startsWith(`${prefix}/`)) {
+      return pathname.slice(prefix.length) || "/";
+    }
+  }
+  return pathname;
+}
+
+function localeFromPathname(pathname: string): string {
+  for (const locale of routing.locales) {
+    const prefix = `/${locale}`;
+    if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
+      return locale;
+    }
+  }
+  return routing.defaultLocale;
+}
+
+function loginPathForLocale(locale: string): string {
+  return locale === routing.defaultLocale
+    ? "/auth/login"
+    : `/${locale}/auth/login`;
+}
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
 
-  // If the env vars are not set, skip proxy check. You can remove this
-  // once you setup the project.
   if (!hasEnvVars) {
     return supabaseResponse;
   }
 
-  // With Fluid compute, don't put this client in a global environment
-  // variable. Always create a new one on each request.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
@@ -38,39 +65,22 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
-  // IMPORTANT: If you remove getClaims() and you use server-side rendering
-  // with the Supabase client, your users may be randomly logged out.
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  const pathname = request.nextUrl.pathname;
+  const barePath = stripLocalePrefix(pathname);
+  const isPublic =
+    barePath === "/" ||
+    barePath.startsWith("/login") ||
+    barePath.startsWith("/auth") ||
+    barePath.startsWith("/showcase");
+
+  if (!isPublic && !user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = loginPathForLocale(localeFromPathname(pathname));
     return NextResponse.redirect(url);
   }
-
-  // IMPORTANT: You *must* return the supabaseResponse object as it is.
-  // If you're creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
 
   return supabaseResponse;
 }

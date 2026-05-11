@@ -104,6 +104,11 @@ export default {
           rose: "#e8b8c4",
         },
 
+        // nRead home — language pill (Figma)
+        home: {
+          cta: "#009fff",
+        },
+
         // Semantic states
         semantic: {
           error: "#dc2626",

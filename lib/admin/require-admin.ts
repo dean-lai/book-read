@@ -1,4 +1,5 @@
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
+import { getLocale } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -6,16 +7,18 @@ import { createClient } from "@/lib/supabase/server";
 export async function requireAdmin() {
   const supabase = await createClient();
   const {
-    data: { user },
+    data: { user: authUser },
     error,
   } = await supabase.auth.getUser();
 
-  if (error || !user) {
-    redirect("/auth/login");
+  if (error || !authUser) {
+    redirect({ href: "/auth/login", locale: await getLocale() });
   }
 
+  const user = authUser!;
+
   if (user.app_metadata?.role !== "admin") {
-    redirect("/");
+    redirect({ href: "/", locale: await getLocale() });
   }
 
   return user;

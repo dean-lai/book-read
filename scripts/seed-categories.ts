@@ -11,7 +11,7 @@ import { resolve } from "path";
 import {
   insertCategory,
   isSlugTaken,
-} from "../server/repositories/categories-repository";
+} from "../server/categories/repositories/categories-repository";
 import { slugify } from "../lib/slugify";
 
 config({ path: resolve(process.cwd(), ".env.local") });

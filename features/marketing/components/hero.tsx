@@ -1,7 +1,10 @@
 import { NextLogo } from "@/features/shell/components/next-logo";
 import { SupabaseLogo } from "@/features/shell/components/supabase-logo";
+import { getTranslations } from "next-intl/server";
 
-export function Hero() {
+export async function Hero() {
+  const t = await getTranslations("hero");
+
   return (
     <div className="flex flex-col gap-16 items-center">
       <div className="flex gap-8 justify-center items-center">
@@ -17,26 +20,30 @@ export function Hero() {
           <NextLogo />
         </a>
       </div>
-      <h1 className="sr-only">Supabase and Next.js Starter Template</h1>
+      <h1 className="sr-only">{t("srTitle")}</h1>
       <p className="text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center">
-        The fastest way to build apps with{" "}
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Supabase
-        </a>{" "}
-        and{" "}
-        <a
-          href="https://nextjs.org/"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Next.js
-        </a>
+        {t.rich("tagline", {
+          supabase: (chunks) => (
+            <a
+              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
+              target="_blank"
+              className="font-bold hover:underline"
+              rel="noreferrer"
+            >
+              {chunks}
+            </a>
+          ),
+          nextjs: (chunks) => (
+            <a
+              href="https://nextjs.org/"
+              target="_blank"
+              className="font-bold hover:underline"
+              rel="noreferrer"
+            >
+              {chunks}
+            </a>
+          ),
+        })}
       </p>
       <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
     </div>

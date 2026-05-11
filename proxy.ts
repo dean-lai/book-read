@@ -1,19 +1,37 @@
+import createMiddleware from "next-intl/middleware";
+import { type NextRequest, NextResponse } from "next/server";
+
+import { routing } from "@/i18n/routing";
 import { updateSession } from "@/lib/supabase/proxy";
-import { type NextRequest } from "next/server";
+
+const intlMiddleware = createMiddleware(routing);
+
+function mergeCookies(target: NextResponse, source: NextResponse) {
+  source.cookies.getAll().forEach((c) => {
+    target.cookies.set(c.name, c.value, c);
+  });
+}
 
 export async function proxy(request: NextRequest) {
-  return await updateSession(request);
+  const sessionResponse = await updateSession(request);
+  const intlResponse = intlMiddleware(request);
+
+  if (sessionResponse.status >= 300 && sessionResponse.status < 400) {
+    mergeCookies(sessionResponse, intlResponse);
+    return sessionResponse;
+  }
+
+  if (intlResponse.status >= 300 && intlResponse.status < 400) {
+    mergeCookies(intlResponse, sessionResponse);
+    return intlResponse;
+  }
+
+  mergeCookies(intlResponse, sessionResponse);
+  return intlResponse;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico (favicon file)
-     * - images - .svg, .png, .jpg, .jpeg, .gif, .webp
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next|_next/static|_next/image|_vercel|.*\\..*).*)",
   ],
 };

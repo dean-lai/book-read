@@ -1,6 +1,7 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
+import { getLocale } from "next-intl/server";
 
 import { requireAdmin } from "@/lib/admin/require-admin";
 import {
@@ -11,7 +12,7 @@ import {
   generateSummaryForAdmin,
   ingestBookRagForAdmin,
   updateBookFromAdmin,
-} from "@/server/services/admin-books-service";
+} from "@/server/books/services/admin-books-service";
 
 export async function generateSummaryAction(input: unknown) {
   await requireAdmin();
@@ -33,7 +34,7 @@ export async function saveBookAction(input: unknown) {
   if (!result.ok) {
     return result;
   }
-  redirect("/admin/books");
+  redirect({ href: "/admin/books", locale: await getLocale() });
 }
 
 export async function saveBookWithFileAction(formData: FormData) {
@@ -52,7 +53,7 @@ export async function saveBookWithFileAction(formData: FormData) {
   if (!result.ok) {
     return result;
   }
-  redirect("/admin/books");
+  redirect({ href: "/admin/books", locale: await getLocale() });
 }
 
 export async function ingestBookRagAction(input: unknown) {
@@ -66,7 +67,7 @@ export async function updateBookAction(input: unknown) {
   if (!result.ok) {
     return result;
   }
-  redirect("/admin/books");
+  redirect({ href: "/admin/books", locale: await getLocale() });
 }
 
 export async function deleteBookAction(input: unknown) {

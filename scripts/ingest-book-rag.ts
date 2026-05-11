@@ -15,8 +15,8 @@ import {
   countWords,
   MAX_BOOK_UPLOAD_WORDS,
 } from "../lib/book-upload-limits";
-import { extractBookText } from "../server/services/ebook-text-extractor-service";
-import { ingestBookRag } from "../server/services/rag-service";
+import { extractBookText } from "../server/books/services/ebook-text-extractor-service";
+import { ingestBookRag } from "../server/books/services/rag-service";
 
 config({ path: resolve(process.cwd(), ".env.local") });
 config({ path: resolve(process.cwd(), ".env") });

@@ -106,6 +106,25 @@ export const userBooks = pgTable(
   ],
 );
 
+/** Starred books per user (distinct from reading-position `bookmarks`). */
+export const bookFavorites = pgTable(
+  "book_favorites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull(),
+    bookId: uuid("book_id")
+      .notNull()
+      .references(() => books.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("book_favorites_user_id_book_id_key").on(t.userId, t.bookId),
+    index("book_favorites_user_id_idx").on(t.userId),
+  ],
+);
+
 export const bookmarks = pgTable(
   "bookmarks",
   {
