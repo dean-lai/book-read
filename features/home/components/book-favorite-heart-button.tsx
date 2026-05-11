@@ -13,6 +13,8 @@ type BookFavoriteHeartButtonProps = {
   disabled?: boolean;
   onToggle: (bookId: string) => void;
   onRequireLogin: () => void;
+  /** `on-cover` — corner overlay, reveals on hover. `toolbar` — always visible (e.g. book detail). */
+  variant?: "on-cover" | "toolbar";
 };
 
 export function BookFavoriteHeartButton({
@@ -22,11 +24,18 @@ export function BookFavoriteHeartButton({
   disabled,
   onToggle,
   onRequireLogin,
+  variant = "on-cover",
 }: BookFavoriteHeartButtonProps) {
   const t = useTranslations("favorites");
+  const isToolbar = variant === "toolbar";
 
   return (
-    <div className="absolute right-2 top-2 flex justify-end">
+    <div
+      className={cn(
+        "flex justify-end",
+        isToolbar ? "shrink-0 pt-0.5" : "absolute right-2 top-2",
+      )}
+    >
       <Button
         type="button"
         variant="secondary"
@@ -34,9 +43,11 @@ export function BookFavoriteHeartButton({
         disabled={disabled}
         className={cn(
           "rounded-full border-0 bg-canvas/90 text-ink shadow-card backdrop-blur-sm transition-opacity",
-          isFavorite
+          isToolbar
             ? "opacity-100"
-            : "opacity-0 group-hover/cover:opacity-100 focus-within:opacity-100",
+            : isFavorite
+              ? "opacity-100"
+              : "opacity-0 group-hover/cover:opacity-100 focus-within:opacity-100",
         )}
         aria-pressed={isFavorite}
         aria-label={isFavorite ? t("removeFavorite") : t("addFavorite")}

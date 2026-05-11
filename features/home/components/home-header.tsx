@@ -19,10 +19,11 @@ export function HomeHeaderSkeleton() {
 }
 
 type HomeHeaderProps = {
-  searchBar?: ReactNode;
+  /** Left side of the nav row (e.g. search on home, back link on book detail). */
+  leading?: ReactNode;
 };
 
-export async function HomeHeader({ searchBar }: HomeHeaderProps) {
+export async function HomeHeader({ leading }: HomeHeaderProps) {
   const t = await getTranslations("home");
   const tFavorites = await getTranslations("favorites");
   const supabase = await createClient();
@@ -40,8 +41,8 @@ export async function HomeHeader({ searchBar }: HomeHeaderProps) {
   return (
     <header className="border-b border-hairline bg-surface-card">
       <div className="mx-auto flex h-nav w-full max-w-content items-center justify-between gap-base px-base md:px-lg xl:px-xl">
-        {searchBar ? (
-          <div className="flex min-w-0 flex-1 justify-start">{searchBar}</div>
+        {leading ? (
+          <div className="flex min-w-0 flex-1 justify-start">{leading}</div>
         ) : null}
         <div className="flex shrink-0 items-center gap-lg">
           <Button

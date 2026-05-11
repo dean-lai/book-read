@@ -93,6 +93,7 @@ export default async function FavoritesPage() {
             {books.map((book) => (
               <li key={book.id} className="min-w-0">
                 <BookCover
+                  href={`/books/${book.id}`}
                   coverSrc={resolveBookCoverSrc(book.coverUrl)}
                   bookName={book.title}
                   authorName={book.author}

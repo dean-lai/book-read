@@ -42,7 +42,7 @@ type HomeBooksSearchContextValue = {
 const HomeBooksSearchContext =
   createContext<HomeBooksSearchContextValue | null>(null);
 
-function useHomeBooksSearch(): HomeBooksSearchContextValue {
+export function useHomeBooksSearch(): HomeBooksSearchContextValue {
   const ctx = useContext(HomeBooksSearchContext);
   if (!ctx) {
     throw new Error(
@@ -69,20 +69,31 @@ function parseBooksJson(rows: unknown[]): BookRowWithCategory[] {
 type ProviderProps = {
   initialBooks: BookRowWithCategory[];
   initialFavoriteBookIds?: string[];
+  /** Deep-linked search from `/?q=…` (e.g. after searching from book detail). */
+  initialSearchQuery?: string;
   favoritesEnabled?: boolean;
   isLoggedIn?: boolean;
   children: ReactNode;
 };
 
+function normalizeInitialSearchQuery(raw: string | undefined): string {
+  if (raw == null || typeof raw !== "string") {
+    return "";
+  }
+  return raw.trim().slice(0, 200);
+}
+
 export function HomeBooksSearchProvider({
   initialBooks,
   initialFavoriteBookIds = [],
+  initialSearchQuery = "",
   favoritesEnabled = false,
   isLoggedIn = false,
   children,
 }: ProviderProps) {
-  const [inputValue, setInputValue] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const normalizedInitial = normalizeInitialSearchQuery(initialSearchQuery);
+  const [inputValue, setInputValue] = useState(normalizedInitial);
+  const [debouncedQuery, setDebouncedQuery] = useState(normalizedInitial);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -347,6 +358,7 @@ export function HomeBooksMainSection() {
           {displayedBooks.map((book) => (
             <li key={book.id} className="min-w-0">
               <BookCover
+                href={`/books/${book.id}`}
                 coverSrc={resolveBookCoverSrc(book.coverUrl)}
                 bookName={book.title}
                 authorName={book.author}

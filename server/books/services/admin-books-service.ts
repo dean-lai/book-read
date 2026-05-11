@@ -29,6 +29,7 @@ const saveBookSchema = z.object({
   author: z.string().min(1, "Author is required"),
   summaryContent: z.string().min(1, "Summary is required"),
   categoryId: z.string().optional(),
+  coverUrl: z.string().optional(),
 });
 
 const saveBookWithFileSchema = saveBookSchema.extend({
@@ -56,6 +57,11 @@ const ingestRagSchema = z
     message: `Book text must be at most ${MAX_BOOK_UPLOAD_WORDS} words.`,
     path: ["rawText"],
   });
+
+function parseCoverUrl(raw: string | undefined): string | null {
+  const t = raw?.trim();
+  return t ? t : null;
+}
 
 function parseCategoryId(
   raw: string | undefined,
@@ -163,6 +169,7 @@ export async function createBookFromAdmin(input: unknown) {
       author: parsed.data.author.trim(),
       description: parsed.data.summaryContent.trim(),
       categoryId: cat.id,
+      coverUrl: parseCoverUrl(parsed.data.coverUrl),
     });
     return { ok: true as const, id };
   } catch (e) {
@@ -212,6 +219,7 @@ export async function createBookAndIngestFromAdmin(input: unknown) {
       author: parsed.data.author.trim(),
       description: parsed.data.summaryContent.trim(),
       categoryId: cat.id,
+      coverUrl: parseCoverUrl(parsed.data.coverUrl),
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Could not save the book.";
@@ -270,6 +278,10 @@ export async function updateBookFromAdmin(input: unknown) {
       author: parsed.data.author.trim(),
       description: parsed.data.summaryContent.trim(),
       categoryId: cat.id,
+      coverUrl:
+        parsed.data.coverUrl !== undefined
+          ? parseCoverUrl(parsed.data.coverUrl)
+          : undefined,
     });
   } catch (e) {
     const message =

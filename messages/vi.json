@@ -149,6 +149,8 @@
     "fieldTitlePlaceholder": "Tiêu đề sách",
     "fieldAuthor": "Tác giả",
     "fieldAuthorPlaceholder": "Tên tác giả",
+    "fieldCoverUrl": "URL ảnh bìa",
+    "fieldCoverUrlPlaceholder": "https://… hoặc /covers/ten-anh.jpg",
     "fieldCategory": "Thể loại",
     "fieldSummary": "Tóm tắt (Markdown)",
     "fieldSummaryPlaceholder": "# Tóm tắt\n\n## Điểm chính\n\n…",
@@ -183,6 +185,33 @@
     "emptyLibrary": "Chưa có sách. Quay lại sau.",
     "envBanner": "Cấu hình biến môi trường Supabase để bật đăng nhập và thư viện.",
     "coverAlt": "Bìa: {title}"
+  },
+  "bookDetail": {
+    "backToLibrary": "Quay lại thư viện",
+    "authorLabel": "Tác giả",
+    "categoryLabel": "Thể loại",
+    "categoryPlaceholder": "—",
+    "noDescription": "Chưa có mô tả.",
+    "coverAlt": "Bìa: {title}"
+  },
+  "bookChat": {
+    "title": "Hỏi về cuốn sách này",
+    "expand": "Mở",
+    "collapse": "Đóng",
+    "fabOpenAria": "Mở chat về sách",
+    "fabCloseAria": "Đóng chat",
+    "backdropDismiss": "Đóng chat",
+    "quota": "{used} / {limit} câu hỏi hôm nay",
+    "loginPrompt": "Đăng nhập để đặt câu hỏi dựa trên nội dung sách đã được lập chỉ mục.",
+    "signIn": "Đăng nhập",
+    "empty": "Hãy đặt câu hỏi về sách. Câu trả lời dựa trên các đoạn trích từ nội dung sách.",
+    "placeholder": "Nhập câu hỏi…",
+    "send": "Gửi",
+    "thinking": "Đang suy nghĩ…",
+    "loadError": "Không tải được lịch sử chat. Thử lại.",
+    "sendError": "Không gửi được tin nhắn. Thử lại.",
+    "ragError": "Dịch vụ trả lời tạm không khả dụng. Thử lại sau.",
+    "rateLimit": "Bạn đã dùng hết hạn mức câu hỏi hôm nay cho cuốn sách này. Thử lại vào ngày mai."
   },
   "favorites": {
     "navLink": "Yêu thích",

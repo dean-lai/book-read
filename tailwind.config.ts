@@ -84,6 +84,8 @@ export default {
         surface: {
           card: "#ffffff",
           strong: "#f0efed",
+          /** nRead book detail — cover panel behind jacket (Figma). */
+          "cover-tray": "#dee5ed",
           dark: "#0c0a09",
           "dark-elevated": "#1c1917",
         },
@@ -141,6 +143,11 @@ export default {
         "display-md": [
           "32px",
           { lineHeight: "1.13", letterSpacing: "-0.32px" },
+        ],
+        /** Quicksand book title on detail (nRead Figma ~40px). */
+        "display-book": [
+          "40px",
+          { lineHeight: "1.2", letterSpacing: "-0.4px" },
         ],
         "display-sm": ["24px", { lineHeight: "1.2", letterSpacing: "0" }],
 
@@ -205,11 +212,20 @@ export default {
         card: "0 4px 16px rgba(0, 0, 0, 0.04)",
         "card-hover": "0 4px 16px rgba(0, 0, 0, 0.08)",
         "card-strong": "0 8px 32px rgba(0, 0, 0, 0.08)",
+        /** Matches `globals.css` `--shadow-float` (theme + `.dark` overrides). */
+        float: "var(--shadow-float)",
       },
 
       // ─── Max Width ────────────────────────────────────────────────────────────
       maxWidth: {
         content: "1200px",
+        /** Book detail cover column (nRead). */
+        "cover-tray": "20.5rem",
+      },
+
+      aspectRatio: {
+        /** Standard jacket proportion used by BookCover / detail. */
+        cover: "248 / 363",
       },
 
       // ─── Height ───────────────────────────────────────────────────────────────

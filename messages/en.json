@@ -149,6 +149,8 @@
     "fieldTitlePlaceholder": "Book title",
     "fieldAuthor": "Author",
     "fieldAuthorPlaceholder": "Author name",
+    "fieldCoverUrl": "Cover image URL",
+    "fieldCoverUrlPlaceholder": "https://… or /covers/your-image.jpg",
     "fieldCategory": "Category",
     "fieldSummary": "Summary (Markdown)",
     "fieldSummaryPlaceholder": "# Summary\n\n## Key Takeaways\n\n…",
@@ -183,6 +185,33 @@
     "emptyLibrary": "No books yet. Check back soon.",
     "envBanner": "Set Supabase environment variables to enable sign-in and the library.",
     "coverAlt": "Cover: {title}"
+  },
+  "bookDetail": {
+    "backToLibrary": "Back to library",
+    "authorLabel": "Author",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "—",
+    "noDescription": "No description yet.",
+    "coverAlt": "Cover: {title}"
+  },
+  "bookChat": {
+    "title": "Ask about this book",
+    "expand": "Open",
+    "collapse": "Close",
+    "fabOpenAria": "Open book chat",
+    "fabCloseAria": "Close book chat",
+    "backdropDismiss": "Dismiss chat",
+    "quota": "{used} / {limit} questions today",
+    "loginPrompt": "Sign in to ask questions grounded in this book’s indexed text.",
+    "signIn": "Sign in",
+    "empty": "Ask a question about the book. Answers are grounded in retrieved passages from the text.",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "thinking": "Thinking…",
+    "loadError": "Could not load chat history. Try again.",
+    "sendError": "Could not send your message. Try again.",
+    "ragError": "The answer service is unavailable. Try again shortly.",
+    "rateLimit": "You have reached today’s question limit for this book. Try again tomorrow."
   },
   "favorites": {
     "navLink": "Favorites",

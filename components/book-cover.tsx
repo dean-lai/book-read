@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Quicksand } from "next/font/google";
 import type { ReactNode } from "react";
 
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 const quicksand = Quicksand({
@@ -17,6 +18,8 @@ export type BookCoverProps = {
   authorName?: string;
   coverAlt?: string;
   className?: string;
+  /** When set, the card links to the book detail page. */
+  href?: string;
   /** Rendered inside the cover frame (e.g. favorite control). */
   coverAdornment?: ReactNode;
 };
@@ -31,9 +34,19 @@ export function BookCover({
   authorName = "Đồng Vu",
   coverAlt,
   className,
+  href,
   coverAdornment,
 }: BookCoverProps) {
   const remote = /^https?:\/\//i.test(coverSrc);
+
+  const titleBlock = (
+    <div className="mt-sm flex flex-col gap-xxs leading-normal">
+      <h3 className="w-full text-body-md font-bold">{bookName}</h3>
+      <p className="w-full text-caption font-medium text-body-color">
+        {authorName}
+      </p>
+    </div>
+  );
 
   return (
     <article
@@ -45,7 +58,7 @@ export function BookCover({
     >
       <div
         className={cn(
-          "relative aspect-[248/363] w-full overflow-hidden rounded-lg shadow-card",
+          "relative aspect-cover w-full overflow-hidden rounded-lg shadow-card",
           coverAdornment ? "group/cover" : null,
         )}
       >
@@ -57,18 +70,30 @@ export function BookCover({
           sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 190px"
           unoptimized={remote}
         />
+        {href ? (
+          <Link
+            href={href}
+            tabIndex={-1}
+            aria-hidden="true"
+            className="absolute inset-0 z-[1]"
+          />
+        ) : null}
         {coverAdornment ? (
-          <div className="pointer-events-none absolute inset-0 z-10 [&_*]:pointer-events-auto">
+          <div className="pointer-events-none absolute inset-0 z-[2] [&_*]:pointer-events-auto">
             {coverAdornment}
           </div>
         ) : null}
       </div>
-      <div className="mt-sm flex flex-col gap-xxs leading-normal">
-        <h3 className="w-full text-body-md font-bold">{bookName}</h3>
-        <p className="w-full text-caption font-medium text-body-color">
-          {authorName}
-        </p>
-      </div>
+      {href ? (
+        <Link
+          href={href}
+          className="block rounded-md outline-none ring-offset-2 ring-offset-canvas transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {titleBlock}
+        </Link>
+      ) : (
+        titleBlock
+      )}
     </article>
   );
 }

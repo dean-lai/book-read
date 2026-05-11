@@ -16,9 +16,17 @@ import { listBooksWithCategory } from "@/server/books/repositories/books-reposit
 import { getHomeFavoritesBootstrap } from "@/server/favorites/services/book-favorites-service";
 import { getTranslations } from "next-intl/server";
 
-export default async function Home() {
+type HomePageProps = {
+  searchParams: Promise<{ q?: string | string[] }>;
+};
+
+export default async function Home({ searchParams }: HomePageProps) {
   const tFooter = await getTranslations("footer");
   const tHome = await getTranslations("home");
+  const sp = await searchParams;
+  const rawQ = sp.q;
+  const initialSearchQuery =
+    typeof rawQ === "string" ? rawQ : Array.isArray(rawQ) ? rawQ[0] ?? "" : "";
 
   const books = hasEnvVars ? await listBooksWithCategory() : [];
 
@@ -35,11 +43,12 @@ export default async function Home() {
       <HomeBooksSearchProvider
         initialBooks={books}
         initialFavoriteBookIds={initialFavoriteBookIds}
+        initialSearchQuery={initialSearchQuery}
         favoritesEnabled={Boolean(hasEnvVars)}
         isLoggedIn={isLoggedIn}
       >
         <Suspense fallback={<HomeHeaderSkeleton />}>
-          <HomeHeader searchBar={<HomeSearchBar />} />
+          <HomeHeader leading={<HomeSearchBar />} />
         </Suspense>
         {!hasEnvVars ? (
           <div className="border-b border-hairline bg-surface-strong px-base py-sm md:px-lg">

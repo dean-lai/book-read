@@ -48,6 +48,7 @@ export async function saveBookWithFileAction(formData: FormData) {
     author: String(formData.get("author") ?? ""),
     summaryContent: String(formData.get("summaryContent") ?? ""),
     categoryId: String(formData.get("categoryId") ?? ""),
+    coverUrl: String(formData.get("coverUrl") ?? ""),
     file,
   });
   if (!result.ok) {

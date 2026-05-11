@@ -73,6 +73,8 @@
     /* ── Shadow tokens ────────────────────────────────────────────────────────── */
     --shadow-card:       0 4px 16px rgba(0, 0, 0, 0.04);
     --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
+    /** Tight drop for fixed overlays (chat launcher, docked widgets) — less blur than card. */
+    --shadow-float:      0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 
   /* ── Dark surface variant (surface-dark canvas: Agents page, dark heroes) ── */
@@ -104,6 +106,8 @@
     --border:            20 9.1% 9.6%;
     --input:             20 9.1% 9.6%;
     --ring:              30 4.3% 63.1%;
+
+    --shadow-float:      0 1px 2px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.22);
   }
 }
 

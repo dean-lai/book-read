@@ -10,7 +10,10 @@ import {
   replaceBookChunks,
   searchBookChunksByVector,
 } from "@/server/books/repositories/books-repository";
-import { chunkBookText } from "@/server/books/services/book-rag-utils";
+import {
+  chunkBookText,
+  stripChunkBracketCitations,
+} from "@/server/books/services/book-rag-utils";
 
 export type RagQueryInput = {
   bookId: string;
@@ -81,8 +84,8 @@ export async function queryBookRag(
   }
 
   const queryVector = await embedText(parsed.message);
-  const matches = await searchBookChunksByVector(parsed.bookId, queryVector, 8);
-  const strongMatches = matches.filter((m) => m.score >= MIN_CONFIDENCE).slice(0, 5);
+  const matches = await searchBookChunksByVector(parsed.bookId, queryVector, 3);
+  const strongMatches = matches.filter((m) => m.score >= MIN_CONFIDENCE).slice(0, 3);
 
   if (!strongMatches.length) {
     return {
@@ -93,17 +96,14 @@ export async function queryBookRag(
   }
 
   const context = strongMatches
-    .map(
-      (match) =>
-        `Chunk ${match.chunkIndex} (score ${match.score.toFixed(3)}):\n${match.content}`,
-    )
+    .map((match, i) => `Excerpt ${i + 1}:\n${match.content}`)
     .join("\n\n---\n\n");
 
   const model = getChatModel();
   const prompt = `
 You answer user questions strictly from provided book context.
 If the answer is not clearly present in context, say you cannot find it.
-Be concise and cite chunk numbers in square brackets like [12].
+Be concise. Do not include bracketed numbers, excerpt labels, or other citations — answer in plain prose only.
 
 Question:
 ${parsed.message}
@@ -113,7 +113,7 @@ ${context}
 `.trim();
 
   const completion = await model.generateContent(prompt);
-  const reply = completion.response.text().trim();
+  const reply = stripChunkBracketCitations(completion.response.text().trim());
   if (!reply) {
     throw new Error("RAG model returned an empty response.");
   }

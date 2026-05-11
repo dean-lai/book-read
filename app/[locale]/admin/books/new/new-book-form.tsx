@@ -44,6 +44,7 @@ type SaveFields = {
   author: string;
   summaryContent: string;
   categoryId?: string;
+  coverUrl: string;
 };
 
 type CategoryOption = { id: string; name: string };
@@ -62,6 +63,7 @@ export function NewBookForm({
         author: z.string().min(1, t("validationAuthor")),
         summaryContent: z.string().min(1, t("validationSummary")),
         categoryId: z.string().optional(),
+        coverUrl: z.string(),
       }),
     [t],
   );
@@ -85,6 +87,7 @@ export function NewBookForm({
       author: "",
       summaryContent: "",
       categoryId: "__none__",
+      coverUrl: "",
     },
   });
 
@@ -133,6 +136,7 @@ export function NewBookForm({
           ? ""
           : values.categoryId,
       );
+      data.append("coverUrl", values.coverUrl.trim());
       data.append("file", selectedFile);
       const result = await saveBookWithFileAction(data);
       if (
@@ -281,6 +285,23 @@ export function NewBookForm({
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="coverUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("fieldCoverUrl")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("fieldCoverUrlPlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

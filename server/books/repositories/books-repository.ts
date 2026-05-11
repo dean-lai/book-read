@@ -8,6 +8,8 @@ export type BookInsert = {
   author: string;
   description: string;
   categoryId: string | null;
+  /** Omit on update to leave the existing cover unchanged. */
+  coverUrl?: string | null;
 };
 
 export type BookRowWithCategory = {
@@ -16,6 +18,15 @@ export type BookRowWithCategory = {
   author: string;
   coverUrl: string | null;
   createdAt: Date;
+  categoryName: string | null;
+};
+
+export type BookDetailRow = {
+  id: string;
+  title: string;
+  author: string;
+  coverUrl: string | null;
+  description: string | null;
   categoryName: string | null;
 };
 
@@ -48,6 +59,7 @@ export async function insertBook(data: BookInsert): Promise<string> {
       author: data.author,
       description: data.description,
       categoryId: data.categoryId,
+      coverUrl: data.coverUrl ?? null,
     })
     .returning({ id: books.id });
   return inserted.id;
@@ -126,6 +138,7 @@ export async function updateBook(
       author: data.author,
       description: data.description,
       categoryId: data.categoryId,
+      ...(data.coverUrl !== undefined ? { coverUrl: data.coverUrl } : {}),
     })
     .where(eq(books.id, id));
 }
@@ -192,6 +205,26 @@ export async function listBooksByIdsOrdered(
   return ids
     .map((id) => byId.get(id))
     .filter((r): r is BookRowWithCategory => r != null);
+}
+
+export async function getBookByIdWithCategory(
+  id: string,
+): Promise<BookDetailRow | null> {
+  const db = getDb();
+  const rows = await db
+    .select({
+      id: books.id,
+      title: books.title,
+      author: books.author,
+      coverUrl: books.coverUrl,
+      description: books.description,
+      categoryName: categories.name,
+    })
+    .from(books)
+    .leftJoin(categories, eq(books.categoryId, categories.id))
+    .where(eq(books.id, id))
+    .limit(1);
+  return rows[0] ?? null;
 }
 
 export async function listBooksWithCategory(options?: {

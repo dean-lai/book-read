@@ -19,7 +19,7 @@ Authoritative references: [DESIGN.md](DESIGN.md), [app/globals.css](app/globals.
 
 ## Spacing, radius, shadow
 
-- Prefer spacing tokens (`xxs`, `xs`, `sm`, `base`, `md`, `lg`, `xl`, `section`), radius tokens (`rounded-lg`, `rounded-pill`, …), and `shadow-card` / `shadow-card-hover` per DESIGN.md — not `gap-[5px]` or ad-hoc `shadow-[...]`.
+- Prefer spacing tokens (`xxs`, `xs`, `sm`, `base`, `md`, `lg`, `xl`, `section`), radius tokens (`rounded-lg`, `rounded-pill`, …), and shadow tokens per DESIGN.md (`shadow-card`, `shadow-card-hover`, `shadow-float` for tight fixed overlays) — not `gap-[5px]` or ad-hoc `shadow-[...]`.
 
 ## shadcn
 

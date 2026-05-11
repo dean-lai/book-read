@@ -58,3 +58,11 @@ export function chunkBookText(rawText: string): ChunkedText[] {
   }
   return chunks;
 }
+
+/** Removes model-added chunk index markers like `[12]` from answer text. */
+export function stripChunkBracketCitations(text: string): string {
+  return text
+    .replace(/\[\d+\]/g, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}

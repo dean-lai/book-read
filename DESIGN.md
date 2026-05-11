@@ -370,6 +370,7 @@ The system uses **hairline + soft drop**. Cards float above the off-white canvas
 | Card | `{colors.surface-card}` (#ffffff) | Content cards |
 | Hairline border | 1px `{colors.hairline}` | Card outlines |
 | Soft drop | `0 4px 16px rgba(0, 0, 0, 0.04)` | Hovered cards (single shadow tier) |
+| Float (tight) | `--shadow-float` → `shadow-float` | Fixed overlays (e.g. book chat panel, launcher) — smaller blur than card |
 | Gradient orb | Radial gradient with one of `{colors.gradient-*}` | Atmospheric depth — never a card surface |
 
 ### Decorative Depth
