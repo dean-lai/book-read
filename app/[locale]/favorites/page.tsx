@@ -5,17 +5,35 @@ import { resolveBookCoverSrc } from "@/features/home/lib/book-cover-src";
 import { Link } from "@/i18n/navigation";
 import { hasEnvVars } from "@/lib/utils";
 import { getFavoritesPageCatalog } from "@/server/favorites/services/book-favorites-service";
+import { ChevronLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
 export default async function FavoritesPage() {
-  const t = await getTranslations("favorites");
+  const [t, tBookDetail] = await Promise.all([
+    getTranslations("favorites"),
+    getTranslations("bookDetail"),
+  ]);
+
+  const headerLeading = (
+    <Button
+      asChild
+      variant="ghost"
+      size="sm"
+      className="-ms-sm gap-xs px-sm font-sans text-body-md text-ink hover:text-ink-primary dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
+    >
+      <Link href="/">
+        <ChevronLeft className="size-5 shrink-0" aria-hidden />
+        {tBookDetail("backToLibrary")}
+      </Link>
+    </Button>
+  );
 
   if (!hasEnvVars) {
     return (
       <div className="flex min-h-screen flex-col bg-canvas font-sans text-ink">
         <Suspense fallback={<HomeHeaderSkeleton />}>
-          <HomeHeader />
+          <HomeHeader leading={headerLeading} />
         </Suspense>
         <main className="mx-auto w-full max-w-content flex-1 px-base py-xl md:px-lg xl:px-xl">
           <h1 className="font-sans text-display-sm font-bold text-ink">
@@ -33,7 +51,7 @@ export default async function FavoritesPage() {
     return (
       <div className="flex min-h-screen flex-col bg-canvas font-sans text-ink">
         <Suspense fallback={<HomeHeaderSkeleton />}>
-          <HomeHeader />
+          <HomeHeader leading={headerLeading} />
         </Suspense>
         <main className="mx-auto w-full max-w-content flex-1 px-base py-xl md:px-lg xl:px-xl">
           <h1 className="font-sans text-display-sm font-bold text-ink">
@@ -59,7 +77,7 @@ export default async function FavoritesPage() {
     return (
       <div className="flex min-h-screen flex-col bg-canvas font-sans text-ink">
         <Suspense fallback={<HomeHeaderSkeleton />}>
-          <HomeHeader />
+          <HomeHeader leading={headerLeading} />
         </Suspense>
         <main className="mx-auto w-full max-w-content flex-1 px-base py-xl md:px-lg xl:px-xl">
           <h1 className="font-sans text-display-sm font-bold text-ink">
@@ -76,7 +94,7 @@ export default async function FavoritesPage() {
   return (
     <div className="flex min-h-screen flex-col bg-canvas font-sans text-ink">
       <Suspense fallback={<HomeHeaderSkeleton />}>
-        <HomeHeader />
+        <HomeHeader leading={headerLeading} />
       </Suspense>
       <main className="mx-auto w-full max-w-content flex-1 px-base py-xl md:px-lg xl:px-xl">
         <h1 className="font-sans text-display-sm font-bold uppercase tracking-tight text-ink/80">

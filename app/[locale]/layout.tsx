@@ -1,4 +1,5 @@
 import { DocumentLang } from "@/components/document-lang";
+import { ViewTransitionRoot } from "@/components/view-transition-root";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -41,7 +42,7 @@ async function LocaleIntlShell({ children, params }: Props) {
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <DocumentLang />
-      {children}
+      <ViewTransitionRoot>{children}</ViewTransitionRoot>
     </NextIntlClientProvider>
   );
 }

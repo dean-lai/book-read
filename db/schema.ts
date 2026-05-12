@@ -15,8 +15,7 @@ import {
 /** Match your embedding model (e.g. OpenAI text-embedding-3-small / ada-002). */
 export const EMBEDDING_DIMENSIONS = 1536;
 
-/**
- */
+/** Cast for Drizzle `check()` SQL fragments (typed as `SQL` internally). */
 const asCheckSql = <T>(expr: T): Parameters<typeof check>[1] =>
   expr as unknown as Parameters<typeof check>[1];
 
@@ -53,7 +52,12 @@ export const books = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (t) => [index("books_category_id_idx").on(t.categoryId)],
+  (t) => [
+    index("books_category_id_idx").on(t.categoryId),
+    // Requires `CREATE EXTENSION IF NOT EXISTS pg_trgm` (e.g. Supabase: Dashboard → Extensions).
+    index("books_title_trgm_idx").using("gin", sql`${t.title} gin_trgm_ops`),
+    index("books_author_trgm_idx").using("gin", sql`${t.author} gin_trgm_ops`),
+  ],
 );
 
 export const bookChunks = pgTable(

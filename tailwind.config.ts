@@ -127,6 +127,8 @@ export default {
         display: ["var(--font-display)", "'Times New Roman'", "serif"],
         // Inter — body, nav, captions, buttons
         sans: ["var(--font-sans)", "sans-serif"],
+        /** Book detail summary — system Georgia (overrides parent Quicksand). */
+        georgia: ["Georgia", "serif"],
       },
 
       fontSize: {

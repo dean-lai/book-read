@@ -24,6 +24,9 @@ function supabaseStorageRemotePatterns(): NonNullable<
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  experimental: {
+    viewTransition: true,
+  },
   // pdf-parse → pdfjs-dist loads pdf.worker.mjs from package paths; bundling breaks that resolution.
   serverExternalPackages: ["pdf-parse", "pdfjs-dist", "@napi-rs/canvas"],
   images: {

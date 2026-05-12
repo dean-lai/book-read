@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Quicksand } from "next/font/google";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,11 @@ export type BookCoverProps = {
   className?: string;
   /** When set, the card links to the book detail page. */
   href?: string;
+  /**
+   * When set with `href`, assigns `view-transition-name` for React / Next view
+   * transitions (must match the detail page cover for the same book id).
+   */
+  viewTransitionBookId?: string;
   /** Rendered inside the cover frame (e.g. favorite control). */
   coverAdornment?: ReactNode;
 };
@@ -35,9 +40,15 @@ export function BookCover({
   coverAlt,
   className,
   href,
+  viewTransitionBookId,
   coverAdornment,
 }: BookCoverProps) {
   const remote = /^https?:\/\//i.test(coverSrc);
+
+  const coverFrameStyle: CSSProperties | undefined =
+    href && viewTransitionBookId
+      ? { viewTransitionName: `book-cover-${viewTransitionBookId}` }
+      : undefined;
 
   const titleBlock = (
     <div className="mt-sm flex flex-col gap-xxs leading-normal">
@@ -58,16 +69,17 @@ export function BookCover({
     >
       <div
         className={cn(
-          "relative aspect-cover w-full overflow-hidden rounded-lg shadow-card",
+          "relative aspect-cover w-full overflow-hidden rounded-lg shadow-card transition-transform transition-shadow duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none hover:-translate-y-0.5 hover:shadow-card-hover",
           coverAdornment ? "group/cover" : null,
         )}
+        style={coverFrameStyle}
       >
         <Image
           src={coverSrc}
           alt={coverAlt ?? bookName}
           fill
+          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 248px"
           className="object-cover"
-          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 190px"
           unoptimized={remote}
         />
         {href ? (
@@ -87,7 +99,7 @@ export function BookCover({
       {href ? (
         <Link
           href={href}
-          className="block rounded-md outline-none ring-offset-2 ring-offset-canvas transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring"
+          className="block rounded-md outline-none ring-offset-2 ring-offset-canvas transition-opacity hover:opacity-95 focus-visible:ring-2 focus-visible:ring-ring"
         >
           {titleBlock}
         </Link>

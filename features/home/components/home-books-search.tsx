@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 import { setBookFavoriteAction } from "@/actions/book-favorites";
 import { BookCover } from "@/components/book-cover";
 import { Input } from "@/components/ui/input";
+import { HOME_FAVORITE_PREVIEW_MAX } from "@/features/home/lib/home-favorites-constants";
 import type { BookRowWithCategory } from "@/server/books/repositories/books-repository";
 
 import { BookFavoriteHeartButton } from "./book-favorite-heart-button";
@@ -35,7 +36,9 @@ type HomeBooksSearchContextValue = {
   favoritesEnabled: boolean;
   isLoggedIn: boolean;
   favoriteBookIds: ReadonlySet<string>;
-  toggleFavorite: (bookId: string) => void;
+  favoritePreviewBooks: BookRowWithCategory[];
+  featuredBook: BookRowWithCategory | null;
+  toggleFavorite: (bookId: string, snapshot?: BookRowWithCategory) => void;
   openFavoriteLoginDialog: () => void;
 };
 
@@ -69,6 +72,8 @@ function parseBooksJson(rows: unknown[]): BookRowWithCategory[] {
 type ProviderProps = {
   initialBooks: BookRowWithCategory[];
   initialFavoriteBookIds?: string[];
+  initialFavoritePreviewBooks?: BookRowWithCategory[];
+  initialFeaturedBook?: BookRowWithCategory | null;
   /** Deep-linked search from `/?q=…` (e.g. after searching from book detail). */
   initialSearchQuery?: string;
   favoritesEnabled?: boolean;
@@ -86,6 +91,8 @@ function normalizeInitialSearchQuery(raw: string | undefined): string {
 export function HomeBooksSearchProvider({
   initialBooks,
   initialFavoriteBookIds = [],
+  initialFavoritePreviewBooks = [],
+  initialFeaturedBook = null,
   initialSearchQuery = "",
   favoritesEnabled = false,
   isLoggedIn = false,
@@ -112,40 +119,60 @@ export function HomeBooksSearchProvider({
   const [favoriteBookIds, setFavoriteBookIds] = useState(
     () => new Set(initialFavoriteBookIds),
   );
+  const [favoritePreviewBooks, setFavoritePreviewBooks] = useState<
+    BookRowWithCategory[]
+  >(() => [...initialFavoritePreviewBooks]);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
-  const toggleFavorite = useCallback(async (bookId: string) => {
-    if (!favoritesEnabled) {
-      return;
-    }
-    let shouldAdd = false;
-    setFavoriteBookIds((prev) => {
-      shouldAdd = !prev.has(bookId);
-      const next = new Set(prev);
-      if (shouldAdd) {
-        next.add(bookId);
-      } else {
-        next.delete(bookId);
+  const favoriteBookIdsRef = useRef(favoriteBookIds);
+  favoriteBookIdsRef.current = favoriteBookIds;
+  const favoritePreviewBooksRef = useRef(favoritePreviewBooks);
+  favoritePreviewBooksRef.current = favoritePreviewBooks;
+
+  const toggleFavorite = useCallback(
+    async (bookId: string, snapshot?: BookRowWithCategory) => {
+      if (!favoritesEnabled) {
+        return;
       }
-      return next;
-    });
-    try {
-      const result = await setBookFavoriteAction(bookId, shouldAdd);
-      if (!result.ok) {
-        throw new Error(result.code);
-      }
-    } catch {
+      const rollbackIds = new Set(favoriteBookIdsRef.current);
+      const rollbackPreview = [...favoritePreviewBooksRef.current];
+
+      let shouldAdd = false;
       setFavoriteBookIds((prev) => {
+        shouldAdd = !prev.has(bookId);
         const next = new Set(prev);
         if (shouldAdd) {
-          next.delete(bookId);
-        } else {
           next.add(bookId);
+        } else {
+          next.delete(bookId);
         }
         return next;
       });
-    }
-  }, [favoritesEnabled]);
+      setFavoritePreviewBooks((prev) => {
+        if (shouldAdd && snapshot) {
+          if (prev.some((b) => b.id === bookId)) {
+            return prev;
+          }
+          return [snapshot, ...prev].slice(0, HOME_FAVORITE_PREVIEW_MAX);
+        }
+        if (!shouldAdd) {
+          return prev.filter((b) => b.id !== bookId);
+        }
+        return prev;
+      });
+
+      try {
+        const result = await setBookFavoriteAction(bookId, shouldAdd);
+        if (!result.ok) {
+          throw new Error(result.code);
+        }
+      } catch {
+        setFavoriteBookIds(() => new Set(rollbackIds));
+        setFavoritePreviewBooks(rollbackPreview);
+      }
+    },
+    [favoritesEnabled],
+  );
 
   const openFavoriteLoginDialog = useCallback(() => {
     setLoginDialogOpen(true);
@@ -220,7 +247,8 @@ export function HomeBooksSearchProvider({
   }, [activeQuery, initialBooks, remoteBooks]);
 
   const searchPending =
-    Boolean(activeQuery) && (inputPending || isSearching || remoteBooks === null);
+    Boolean(activeQuery) &&
+    (inputPending || isSearching || remoteBooks === null);
 
   const value = useMemo<HomeBooksSearchContextValue>(
     () => ({
@@ -233,6 +261,8 @@ export function HomeBooksSearchProvider({
       favoritesEnabled,
       isLoggedIn,
       favoriteBookIds,
+      favoritePreviewBooks,
+      featuredBook: initialFeaturedBook,
       toggleFavorite,
       openFavoriteLoginDialog,
     }),
@@ -240,7 +270,9 @@ export function HomeBooksSearchProvider({
       activeQuery,
       displayedBooks,
       favoriteBookIds,
+      favoritePreviewBooks,
       favoritesEnabled,
+      initialFeaturedBook,
       inputValue,
       isLoggedIn,
       openFavoriteLoginDialog,
@@ -296,9 +328,17 @@ export function HomeBooksMainSection() {
     favoritesEnabled,
     isLoggedIn,
     favoriteBookIds,
+    featuredBook,
     toggleFavorite,
     openFavoriteLoginDialog,
   } = useHomeBooksSearch();
+
+  const gridBooks = useMemo(() => {
+    if (activeQuery.length > 0 || !featuredBook) {
+      return displayedBooks;
+    }
+    return displayedBooks.filter((b) => b.id !== featuredBook.id);
+  }, [activeQuery, displayedBooks, featuredBook]);
 
   const showNoResultsCopy =
     activeQuery.length > 0 &&
@@ -313,7 +353,7 @@ export function HomeBooksMainSection() {
     !searchError &&
     !showEmptyLibrary &&
     !showNoResultsCopy &&
-    displayedBooks.length > 0;
+    gridBooks.length > 0;
 
   return (
     <section
@@ -321,17 +361,12 @@ export function HomeBooksMainSection() {
       className="mx-auto w-full max-w-content px-base pb-xl pt-md md:px-lg xl:px-xl"
       aria-labelledby="newest-heading"
     >
-      <div className="mb-md flex flex-wrap items-baseline gap-x-xs gap-y-xxs">
-        <h2
-          id="newest-heading"
-          className="font-sans text-display-sm font-bold uppercase tracking-tight text-ink/80"
-        >
-          {t("newestTitle")}
-        </h2>
-        <span className="text-title-sm font-medium text-body-color">
-          {t("seeMoreDecorative")}
-        </span>
-      </div>
+      <h2
+        id="newest-heading"
+        className="mb-md font-sans text-display-sm font-bold uppercase tracking-tight text-ink/80"
+      >
+        {t("newestTitle")}
+      </h2>
 
       {searchError ? (
         <p className="text-body-md text-brand-muted">{t("searchError")}</p>
@@ -355,21 +390,26 @@ export function HomeBooksMainSection() {
 
       {showGrid ? (
         <ul className="grid list-none grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 sm:gap-x-5 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 xl:gap-x-6">
-          {displayedBooks.map((book) => (
-            <li key={book.id} className="min-w-0">
+          {gridBooks.map((book, index) => (
+            <li
+              key={book.id}
+              className="min-w-0 motion-reduce:animate-none animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-300"
+              style={{ animationDelay: `${index * 40}ms` }}
+            >
               <BookCover
                 href={`/books/${book.id}`}
                 coverSrc={resolveBookCoverSrc(book.coverUrl)}
                 bookName={book.title}
                 authorName={book.author}
                 coverAlt={t("coverAlt", { title: book.title })}
+                viewTransitionBookId={book.id}
                 coverAdornment={
                   favoritesEnabled ? (
                     <BookFavoriteHeartButton
                       bookId={book.id}
                       isFavorite={favoriteBookIds.has(book.id)}
                       isLoggedIn={isLoggedIn}
-                      onToggle={toggleFavorite}
+                      onToggle={(id) => toggleFavorite(id, book)}
                       onRequireLogin={openFavoriteLoginDialog}
                     />
                   ) : null

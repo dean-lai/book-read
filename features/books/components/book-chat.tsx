@@ -365,7 +365,7 @@ export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
                         placeholder={t("placeholder")}
                         rows={2}
                         disabled={isPending}
-                        className="min-h-14 flex-1 resize-none border-hairline-strong text-ink text-muted"
+                        className="min-h-14 flex-1 resize-none border-hairline-strong text-ink"
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && !e.shiftKey) {
                             e.preventDefault();

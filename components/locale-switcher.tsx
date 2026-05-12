@@ -12,48 +12,33 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { routing } from "@/i18n/routing";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { Languages } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 type LocaleSwitcherProps = {
-  /** Merges into the trigger `Button` (e.g. home header pill styles). */
+  /** Merges into the trigger `Button` (e.g. height to align with adjacent nav controls). */
   triggerClassName?: string;
-  /** When set, overrides the default `localeSwitcher.label` for the trigger text. */
-  buttonLabel?: string;
 };
 
-export function LocaleSwitcher({
-  triggerClassName,
-  buttonLabel,
-}: LocaleSwitcherProps = {}) {
+export function LocaleSwitcher({ triggerClassName }: LocaleSwitcherProps = {}) {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("localeSwitcher");
+  const localeCode = locale.toUpperCase();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
+          type="button"
           variant="ghost"
           size="sm"
-          className={cn("gap-1.5", triggerClassName)}
+          className={cn("text-ink", triggerClassName)}
+          aria-label={t("label")}
         >
-          <Languages
-            className={cn(
-              "size-4 shrink-0",
-              buttonLabel ? "text-on-primary" : "text-muted-foreground",
-            )}
-          />
-          <span
-            className={cn(
-              buttonLabel
-                ? "inline font-bold text-on-primary"
-                : "text-muted-foreground hidden sm:inline",
-            )}
-          >
-            {buttonLabel ?? t("label")}
+          <span className="font-sans text-body-sm font-medium tabular-nums">
+            {localeCode}
           </span>
         </Button>
       </DropdownMenuTrigger>

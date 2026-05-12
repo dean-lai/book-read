@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { HOME_FAVORITE_PREVIEW_MAX } from "@/features/home/lib/home-favorites-constants";
 import { createClient } from "@/lib/supabase/server";
 import {
   listBooksByIdsOrdered,
@@ -18,6 +19,27 @@ const UUID_RE =
 export type SetBookFavoriteResult =
   | { ok: true }
   | { ok: false; code: "unauthorized" | "invalid_book_id" | "db" };
+
+/**
+ * Recent favorites (metadata) for the home strip — newest saved first, capped.
+ */
+export async function getHomeFavoriteBooksPreview(): Promise<
+  BookRowWithCategory[]
+> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return [];
+  }
+  const listed = await listFavoriteBookIdsOrdered(supabase);
+  if (!listed.ok || listed.ids.length === 0) {
+    return [];
+  }
+  const ids = listed.ids.slice(0, HOME_FAVORITE_PREVIEW_MAX);
+  return listBooksByIdsOrdered(ids);
+}
 
 export async function getHomeFavoritesBootstrap(): Promise<{
   isLoggedIn: boolean;
