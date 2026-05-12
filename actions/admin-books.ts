@@ -49,6 +49,9 @@ export async function saveBookWithFileAction(formData: FormData) {
     summaryContent: String(formData.get("summaryContent") ?? ""),
     categoryId: String(formData.get("categoryId") ?? ""),
     coverUrl: String(formData.get("coverUrl") ?? ""),
+    contentLanguageOverride: String(
+      formData.get("contentLanguageOverride") ?? "__auto__",
+    ),
     file,
   });
   if (!result.ok) {

@@ -179,6 +179,16 @@
   }
 }
 
+@layer utilities {
+  /**
+   * Book detail floating chat / listen panels — theme-aware solid surface
+   * (light: white, dark: elevated black) mixed with transparency over the dimmed backdrop.
+   */
+  .bg-float-dock-panel {
+    background-color: color-mix(in srgb, var(--color-surface-card) 30%, transparent);
+  }
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    Typography Composite Utilities
    Combine font-family + size + weight + tracking in one class.

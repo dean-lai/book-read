@@ -10,6 +10,8 @@ export type BookInsert = {
   categoryId: string | null;
   /** Omit on update to leave the existing cover unchanged. */
   coverUrl?: string | null;
+  /** Omit or null to use auto-detection on the book detail page. */
+  contentLanguageOverride?: "en" | "vi" | null;
 };
 
 export type BookRowWithCategory = {
@@ -27,6 +29,7 @@ export type BookDetailRow = {
   author: string;
   coverUrl: string | null;
   description: string | null;
+  contentLanguageOverride: string | null;
   categoryName: string | null;
 };
 
@@ -60,6 +63,7 @@ export async function insertBook(data: BookInsert): Promise<string> {
       description: data.description,
       categoryId: data.categoryId,
       coverUrl: data.coverUrl ?? null,
+      contentLanguageOverride: data.contentLanguageOverride ?? null,
     })
     .returning({ id: books.id });
   return inserted.id;
@@ -139,6 +143,9 @@ export async function updateBook(
       description: data.description,
       categoryId: data.categoryId,
       ...(data.coverUrl !== undefined ? { coverUrl: data.coverUrl } : {}),
+      ...(data.contentLanguageOverride !== undefined
+        ? { contentLanguageOverride: data.contentLanguageOverride }
+        : {}),
     })
     .where(eq(books.id, id));
 }
@@ -218,6 +225,7 @@ export async function getBookByIdWithCategory(
       author: books.author,
       coverUrl: books.coverUrl,
       description: books.description,
+      contentLanguageOverride: books.contentLanguageOverride,
       categoryName: categories.name,
     })
     .from(books)

@@ -12,6 +12,7 @@ import {
 } from "@/server/books/services/ebook-text-extractor-service";
 import { ingestBookRag } from "@/server/books/services/rag-service";
 import { summarizeBookContent } from "@/server/ai/services/ai-service";
+import { detectBookTextLanguageForSummary } from "@/server/books/lib/detect-summary-language";
 
 const generateSummarySchema = z
   .object({
@@ -24,12 +25,23 @@ const generateSummarySchema = z
     path: ["rawText"],
   });
 
+const summaryLanguageOverrideSchema = z.preprocess(
+  (v) => (v === undefined || v === null || v === "" ? "__auto__" : v),
+  z.enum(["__auto__", "en", "vi"]),
+).transform((v) => {
+  if (v === "en" || v === "vi") {
+    return v;
+  }
+  return null;
+});
+
 const saveBookSchema = z.object({
   title: z.string().min(1, "Title is required"),
   author: z.string().min(1, "Author is required"),
   summaryContent: z.string().min(1, "Summary is required"),
   categoryId: z.string().optional(),
   coverUrl: z.string().optional(),
+  contentLanguageOverride: summaryLanguageOverrideSchema,
 });
 
 const saveBookWithFileSchema = saveBookSchema.extend({
@@ -78,13 +90,18 @@ function parseCategoryId(
 
 function basicMarkdownCheck(text: string): boolean {
   const t = text.trim();
-  return (
-    t.includes("#") &&
-    (t.includes("Summary") ||
-      t.includes("summary") ||
-      t.includes("Key Takeaways") ||
-      t.includes("Detailed Analysis"))
-  );
+  const hasHeadingMarker = t.includes("#");
+  const hasEnglishSections =
+    t.includes("Summary") ||
+    t.includes("summary") ||
+    t.includes("Key Takeaways") ||
+    t.includes("Detailed Analysis");
+  const hasVietnameseSections =
+    t.includes("Tóm tắt") ||
+    t.includes("tóm tắt") ||
+    t.includes("Điểm chính") ||
+    t.includes("Phân tích chi tiết");
+  return hasHeadingMarker && (hasEnglishSections || hasVietnameseSections);
 }
 
 function formatZodMessage(error: z.ZodError): string {
@@ -101,10 +118,12 @@ export async function generateSummaryForAdmin(input: unknown) {
   }
 
   try {
+    const outputLanguage = detectBookTextLanguageForSummary(parsed.data.rawText);
     const { summary } = await summarizeBookContent({
       rawText: parsed.data.rawText,
       titleHint: parsed.data.titleHint,
       authorHint: parsed.data.authorHint,
+      outputLanguage,
     });
 
     if (!basicMarkdownCheck(summary)) {
@@ -170,6 +189,7 @@ export async function createBookFromAdmin(input: unknown) {
       description: parsed.data.summaryContent.trim(),
       categoryId: cat.id,
       coverUrl: parseCoverUrl(parsed.data.coverUrl),
+      contentLanguageOverride: parsed.data.contentLanguageOverride,
     });
     return { ok: true as const, id };
   } catch (e) {
@@ -220,6 +240,7 @@ export async function createBookAndIngestFromAdmin(input: unknown) {
       description: parsed.data.summaryContent.trim(),
       categoryId: cat.id,
       coverUrl: parseCoverUrl(parsed.data.coverUrl),
+      contentLanguageOverride: parsed.data.contentLanguageOverride,
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Could not save the book.";
@@ -282,6 +303,7 @@ export async function updateBookFromAdmin(input: unknown) {
         parsed.data.coverUrl !== undefined
           ? parseCoverUrl(parsed.data.coverUrl)
           : undefined,
+      contentLanguageOverride: parsed.data.contentLanguageOverride,
     });
   } catch (e) {
     const message =

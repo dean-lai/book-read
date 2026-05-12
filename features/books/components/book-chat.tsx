@@ -45,12 +45,36 @@ function getOrCreateThreadId(bookId: string): string {
 export type BookChatProps = {
   bookId: string;
   isLoggedIn: boolean;
+  /** Parent supplies backdrop + fixed shell (e.g. book detail dock). */
+  embedded?: boolean;
+  /** Controlled open state (requires `onOpenChange` when set). */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
-export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
+export function BookChat({
+  bookId,
+  isLoggedIn,
+  embedded = false,
+  open: openControlled,
+  onOpenChange,
+}: BookChatProps) {
   const t = useTranslations("bookChat");
   const locale = useLocale();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const controlled =
+    typeof openControlled === "boolean" && typeof onOpenChange === "function";
+  const open = controlled ? openControlled : internalOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      if (controlled) {
+        onOpenChange!(next);
+      } else {
+        setInternalOpen(next);
+      }
+    },
+    [controlled, onOpenChange],
+  );
   const [messages, setMessages] = useState<UiMessage[]>([]);
   const [input, setInput] = useState("");
   const [questionsUsedToday, setQuestionsUsedToday] = useState(0);
@@ -81,7 +105,7 @@ export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+  }, [open, setOpen]);
 
   useEffect(() => {
     if (!open || !isLoggedIn) {
@@ -228,7 +252,7 @@ export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
 
   return (
     <>
-      {open ? (
+      {!embedded && open ? (
         <button
           type="button"
           className="fixed inset-0 z-40 cursor-default bg-ink/25 backdrop-blur-[1px]"
@@ -239,18 +263,27 @@ export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
 
       <div
         className={cn(
-          "pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-end",
-          "pb-[max(1rem,env(safe-area-inset-bottom))] pl-4 pr-4 pt-2 sm:pb-6 sm:pl-6 sm:pr-6",
+          embedded
+            ? "flex w-full flex-col items-end gap-3"
+            : cn(
+                "pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-end",
+                "pb-[max(1rem,env(safe-area-inset-bottom))] pl-4 pr-4 pt-2 sm:pb-6 sm:pl-6 sm:pr-6",
+              ),
         )}
       >
-        <div className="pointer-events-auto flex w-full max-w-md flex-col items-end gap-3">
+        <div
+          className={cn(
+            "pointer-events-auto flex w-full flex-col items-end gap-3",
+            !embedded && "max-w-md",
+          )}
+        >
           {open ? (
             <Card
               id={panelId}
               role="dialog"
               aria-modal="true"
               aria-labelledby={`${panelId}-title`}
-              className="flex max-h-[min(72dvh,32rem)] w-full min-w-0 flex-col overflow-hidden border border-hairline-strong bg-surface-card/95 shadow-float backdrop-blur-sm"
+              className="flex max-h-[min(72dvh,32rem)] w-full min-w-0 flex-col overflow-hidden border border-hairline-strong bg-float-dock-panel shadow-float"
             >
               <CardHeader className="shrink-0 space-y-0 border-b border-hairline-strong p-md pb-sm">
                 <div className="flex items-start justify-between gap-sm">
@@ -403,7 +436,7 @@ export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
               "h-14 gap-sm rounded-full px-5 shadow-float",
               "sm:min-w-[3.5rem]",
             )}
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setOpen(!open)}
             aria-expanded={open}
             aria-controls={open ? panelId : undefined}
             aria-haspopup="dialog"

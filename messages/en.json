@@ -159,7 +159,12 @@
     "saving": "Saving…",
     "validationTitle": "Title is required",
     "validationAuthor": "Author is required",
-    "validationSummary": "Summary is required"
+    "validationSummary": "Summary is required",
+    "fieldSummaryLanguage": "Summary language",
+    "fieldSummaryLanguageHint": "Auto is usually correct. Set manually only if detection or listen is wrong.",
+    "summaryLanguageAuto": "Auto (detect from text)",
+    "summaryLanguageEn": "English",
+    "summaryLanguageVi": "Vietnamese"
   },
   "bookCoverShowcase": {
     "metaTitle": "Book cover — showcase",
@@ -196,7 +201,25 @@
     "categoryLabel": "Category",
     "categoryPlaceholder": "—",
     "noDescription": "No description yet.",
-    "coverAlt": "Cover: {title}"
+    "coverAlt": "Cover: {title}",
+    "summaryHeading": "Summary"
+  },
+  "bookListen": {
+    "title": "Listen to the summary",
+    "collapse": "Close",
+    "fabOpenAria": "Open the summary listen panel",
+    "fabCloseAria": "Close listen panel",
+    "backdropDismiss": "Close panel",
+    "segmentProgress": "Part {current} of {total}",
+    "playAria": "Play",
+    "pauseAria": "Pause",
+    "rewindAria": "Previous sentence",
+    "forwardAria": "Next sentence",
+    "stopAria": "Stop and reset",
+    "unsupportedLanguage": "Listen is only available for English or Vietnamese summaries.",
+    "noSegments": "Nothing to read aloud for this summary.",
+    "quotaExceeded": "Daily text-to-speech limit reached. Please try again later.",
+    "cloudUnavailable": "Text-to-speech is currently unavailable. Please try again later."
   },
   "bookChat": {
     "title": "Ask about this book",

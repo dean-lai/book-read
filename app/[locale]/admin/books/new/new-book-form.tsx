@@ -43,6 +43,7 @@ type SaveFields = {
   title: string;
   author: string;
   summaryContent: string;
+  contentLanguageOverride: "__auto__" | "en" | "vi";
   categoryId?: string;
   coverUrl: string;
 };
@@ -62,6 +63,7 @@ export function NewBookForm({
         title: z.string().min(1, t("validationTitle")),
         author: z.string().min(1, t("validationAuthor")),
         summaryContent: z.string().min(1, t("validationSummary")),
+        contentLanguageOverride: z.enum(["__auto__", "en", "vi"]),
         categoryId: z.string().optional(),
         coverUrl: z.string(),
       }),
@@ -86,6 +88,7 @@ export function NewBookForm({
       title: "",
       author: "",
       summaryContent: "",
+      contentLanguageOverride: "__auto__",
       categoryId: "__none__",
       coverUrl: "",
     },
@@ -130,6 +133,7 @@ export function NewBookForm({
       data.append("title", values.title.trim());
       data.append("author", values.author.trim());
       data.append("summaryContent", values.summaryContent.trim());
+      data.append("contentLanguageOverride", values.contentLanguageOverride);
       data.append(
         "categoryId",
         values.categoryId === "__none__" || !values.categoryId?.trim()
@@ -329,6 +333,37 @@ export function NewBookForm({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="contentLanguageOverride"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("fieldSummaryLanguage")}</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full max-w-md">
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="__auto__">
+                          {t("summaryLanguageAuto")}
+                        </SelectItem>
+                        <SelectItem value="en">{t("summaryLanguageEn")}</SelectItem>
+                        <SelectItem value="vi">{t("summaryLanguageVi")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-caption text-brand-muted">
+                      {t("fieldSummaryLanguageHint")}
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}

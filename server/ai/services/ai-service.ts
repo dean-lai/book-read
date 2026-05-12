@@ -5,9 +5,14 @@ export type SummarizeInput = {
   titleHint?: string;
   authorHint?: string;
   rawText: string;
+  /**
+   * `vi`: write the full summary in Vietnamese (section titles included).
+   * `en`: English (default).
+   */
+  outputLanguage?: "en" | "vi";
 };
 
-const SYSTEM_PROMPT = `You are an expert nonfiction reader and editor.
+const SYSTEM_PROMPT_EN = `You are an expert nonfiction reader and editor.
 Given raw notes or excerpts about a book, produce a polished Markdown summary.
 
 Rules:
@@ -16,6 +21,19 @@ Rules:
   # Summary
   ## Key Takeaways
   ## Detailed Analysis
+- Tone: professional, clear, and insightful.
+- Do not wrap the output in code fences.`;
+
+const SYSTEM_PROMPT_VI = `You are an expert nonfiction reader and editor.
+Given raw notes or excerpts about a book, produce a polished Markdown summary.
+
+Rules:
+- If title or author are missing from the input, infer them from context when reasonable.
+- Write the entire summary in natural Vietnamese (same language as the source when it is Vietnamese).
+- Output MUST be valid Markdown with exactly these top-level sections (use ## for subsections under Tóm tắt if needed):
+  # Tóm tắt
+  ## Điểm chính
+  ## Phân tích chi tiết
 - Tone: professional, clear, and insightful.
 - Do not wrap the output in code fences.`;
 
@@ -31,10 +49,14 @@ export async function summarizeBookContent(
 
   const modelName = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
 
+  const lang = input.outputLanguage === "vi" ? "vi" : "en";
+  const systemInstruction =
+    lang === "vi" ? SYSTEM_PROMPT_VI : SYSTEM_PROMPT_EN;
+
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: modelName,
-    systemInstruction: SYSTEM_PROMPT,
+    systemInstruction,
     generationConfig: {
       temperature: 0.4,
     },
@@ -42,7 +64,9 @@ export async function summarizeBookContent(
 
   const hints =
     input.titleHint || input.authorHint
-      ? `\nKnown hints — title: ${input.titleHint ?? "(none)"}, author: ${input.authorHint ?? "(none)"}.`
+      ? lang === "vi"
+        ? `\nGợi ý — tiêu đề: ${input.titleHint ?? "(không)"}, tác giả: ${input.authorHint ?? "(không)"}.`
+        : `\nKnown hints — title: ${input.titleHint ?? "(none)"}, author: ${input.authorHint ?? "(none)"}.`
       : "";
 
   const userContent = `${hints}\n\n---\n\n${input.rawText}`.trim();

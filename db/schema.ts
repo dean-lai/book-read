@@ -41,6 +41,7 @@ export const books = pgTable(
     author: text("author").notNull(),
     coverUrl: text("cover_url"),
     description: text("description"),
+    contentLanguageOverride: text("content_language_override"),
     totalPages: integer("total_pages"),
     publishedYear: integer("published_year"),
     genre: text("genre"),

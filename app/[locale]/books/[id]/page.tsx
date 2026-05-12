@@ -7,7 +7,9 @@ import { cache, Suspense, type CSSProperties } from "react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { BookChat } from "@/features/books/components/book-chat";
+import { BookDetailFloatingDock } from "@/features/books/components/book-detail-floating-dock";
+import { BookSummaryMarkdown } from "@/features/books/components/book-summary-markdown";
+import { markdownToPlainText } from "@/features/books/lib/summary-plain-text";
 import { BookDetailHeroAtmosphere } from "@/features/books/components/book-detail-hero-atmosphere";
 import { BookDetailTitle } from "@/features/books/components/book-detail-title";
 import { HomeBooksSearchProvider } from "@/features/home/components/home-books-search";
@@ -20,6 +22,7 @@ import { EnvVarWarning } from "@/features/shell/components/env-var-warning";
 import { Link } from "@/i18n/navigation";
 import { hasEnvVars } from "@/lib/utils";
 import { getBookByIdWithCategory } from "@/server/books/repositories/books-repository";
+import { resolveSummaryContentLanguage } from "@/server/books/lib/detect-summary-language";
 import { getHomeFavoritesBootstrap } from "@/server/favorites/services/book-favorites-service";
 import { getTranslations } from "next-intl/server";
 
@@ -95,6 +98,17 @@ export default async function BookDetailPage({ params }: PageProps) {
   const remote = /^https?:\/\//i.test(coverSrc);
   const categoryLabel =
     book.categoryName?.trim() || t("categoryPlaceholder");
+
+  const rawDescription = book.description?.trim() ?? "";
+  const summaryPlain = markdownToPlainText(rawDescription);
+  const resolvedLang = resolveSummaryContentLanguage(
+    book.contentLanguageOverride,
+    book.description,
+  );
+  const listenDock =
+    rawDescription.length > 0
+      ? { plainTextForSpeech: summaryPlain, resolvedLang }
+      : null;
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-canvas font-sans text-ink dark:bg-[#05050c] dark:text-zinc-100">
@@ -178,10 +192,19 @@ export default async function BookDetailPage({ params }: PageProps) {
                 </dl>
 
                 <div className="max-w-3xl border-t border-hairline pt-md dark:border-white/15">
-                  {book.description?.trim() ? (
-                    <p className="whitespace-pre-line font-georgia text-title-sm font-medium leading-relaxed text-ink-primary dark:text-zinc-300">
-                      {book.description.trim()}
-                    </p>
+                  {rawDescription ? (
+                    <section aria-labelledby={`book-summary-${book.id}`}>
+                      <h2
+                        id={`book-summary-${book.id}`}
+                        className="mb-sm font-sans text-title-sm font-bold text-ink-primary dark:text-white"
+                      >
+                        {t("summaryHeading")}
+                      </h2>
+                      <BookSummaryMarkdown
+                        markdown={rawDescription}
+                        resolvedLang={resolvedLang}
+                      />
+                    </section>
                   ) : (
                     <p className="text-body-md text-brand-muted dark:text-zinc-500">
                       {t("noDescription")}
@@ -191,7 +214,11 @@ export default async function BookDetailPage({ params }: PageProps) {
               </div>
             </div>
           </main>
-          <BookChat bookId={book.id} isLoggedIn={fav.isLoggedIn} />
+          <BookDetailFloatingDock
+            bookId={book.id}
+            isLoggedIn={fav.isLoggedIn}
+            listen={listenDock}
+          />
         </div>
       </HomeBooksSearchProvider>
     </div>

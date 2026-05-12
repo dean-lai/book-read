@@ -159,7 +159,12 @@
     "saving": "Đang lưu…",
     "validationTitle": "Bắt buộc có tiêu đề",
     "validationAuthor": "Bắt buộc có tác giả",
-    "validationSummary": "Bắt buộc có tóm tắt"
+    "validationSummary": "Bắt buộc có tóm tắt",
+    "fieldSummaryLanguage": "Ngôn ngữ tóm tắt",
+    "fieldSummaryLanguageHint": "Thường nên để Tự động. Chỉ chọn thủ công khi phát hiện hoặc nghe sai.",
+    "summaryLanguageAuto": "Tự động (nhận diện từ văn bản)",
+    "summaryLanguageEn": "Tiếng Anh",
+    "summaryLanguageVi": "Tiếng Việt"
   },
   "bookCoverShowcase": {
     "metaTitle": "Bìa sách — showcase",
@@ -196,7 +201,25 @@
     "categoryLabel": "Thể loại",
     "categoryPlaceholder": "—",
     "noDescription": "Chưa có mô tả.",
-    "coverAlt": "Bìa: {title}"
+    "coverAlt": "Bìa: {title}",
+    "summaryHeading": "Tóm tắt"
+  },
+  "bookListen": {
+    "title": "Nghe bản tóm tắt",
+    "collapse": "Đóng",
+    "fabOpenAria": "Mở bảng nghe bản tóm tắt",
+    "fabCloseAria": "Đóng bảng nghe",
+    "backdropDismiss": "Đóng bảng",
+    "segmentProgress": "Phần {current} / {total}",
+    "playAria": "Phát",
+    "pauseAria": "Tạm dừng",
+    "rewindAria": "Câu trước",
+    "forwardAria": "Câu sau",
+    "stopAria": "Dừng và về đầu",
+    "unsupportedLanguage": "Chức năng nghe chỉ hỗ trợ tóm tắt tiếng Anh hoặc tiếng Việt.",
+    "noSegments": "Không có nội dung để đọc cho tóm tắt này.",
+    "quotaExceeded": "Đã đạt giới hạn chuyển văn bản thành giọng nói trong ngày. Vui lòng thử lại sau.",
+    "cloudUnavailable": "Chức năng chuyển văn bản thành giọng nói hiện không khả dụng. Vui lòng thử lại sau."
   },
   "bookChat": {
     "title": "Hỏi về cuốn sách này",
