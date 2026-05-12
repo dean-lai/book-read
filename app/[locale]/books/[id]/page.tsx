@@ -15,7 +15,7 @@ import {
   HomeHeaderSkeleton,
 } from "@/features/home/components/home-header";
 import { resolveBookCoverSrc } from "@/features/home/lib/book-cover-src";
-import { EnvVarWarning } from "@/features/marketing/components/env-var-warning";
+import { EnvVarWarning } from "@/features/shell/components/env-var-warning";
 import { Link } from "@/i18n/navigation";
 import { hasEnvVars } from "@/lib/utils";
 import { getBookByIdWithCategory } from "@/server/books/repositories/books-repository";

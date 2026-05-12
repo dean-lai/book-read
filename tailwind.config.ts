@@ -49,52 +49,55 @@ export default {
         ring: "hsl(var(--ring))",
 
         // ── Brand tokens (ElevenLabs-style editorial) ──────────────────────────
+        // All reference CSS variables defined in globals.css :root / .dark
+        // so they respond correctly to theme switching.
+
         // Primary / Ink
         ink: {
-          DEFAULT: "#0c0a09",
-          primary: "#292524",
-          "primary-active": "#0c0a09",
+          DEFAULT: "var(--color-ink)",
+          primary: "var(--color-primary)",
+          "primary-active": "var(--color-primary-active)",
         },
 
         // Text hierarchy
         "body-color": {
-          DEFAULT: "#4e4e4e",
-          strong: "#292524",
+          DEFAULT: "var(--color-body)",
+          strong: "var(--color-body-strong)",
         },
         brand: {
-          muted: "#777169",
-          "muted-soft": "#a8a29e",
+          muted: "var(--color-muted)",
+          "muted-soft": "var(--color-muted-soft)",
         },
 
         // Hairlines / dividers
         hairline: {
-          DEFAULT: "#e7e5e4",
-          soft: "#f0efed",
-          strong: "#d6d3d1",
+          DEFAULT: "var(--color-hairline)",
+          soft: "var(--color-hairline-soft)",
+          strong: "var(--color-hairline-strong)",
         },
 
         // Canvas / page surfaces
         canvas: {
-          DEFAULT: "#f5f5f5",
-          soft: "#fafafa",
-          deep: "#0c0a09",
+          DEFAULT: "var(--color-canvas)",
+          soft: "var(--color-canvas-soft)",
+          deep: "var(--color-canvas-deep)",
         },
 
         // Elevated surfaces
         surface: {
-          card: "#ffffff",
-          strong: "#f0efed",
+          card: "var(--color-surface-card)",
+          strong: "var(--color-surface-strong)",
           /** nRead book detail — cover panel behind jacket (Figma). */
-          "cover-tray": "#dee5ed",
-          dark: "#0c0a09",
-          "dark-elevated": "#1c1917",
+          "cover-tray": "var(--color-surface-cover-tray)",
+          dark: "var(--color-surface-dark)",
+          "dark-elevated": "var(--color-surface-dark-elevated)",
         },
 
         // On-color text
-        "on-primary": "#ffffff",
+        "on-primary": "var(--color-on-primary)",
         "on-dark": {
-          DEFAULT: "#ffffff",
-          soft: "#a8a29e",
+          DEFAULT: "var(--color-on-dark)",
+          soft: "var(--color-on-dark-soft)",
         },
 
         // Atmospheric gradient orbs (decoration only — never fills or text)
@@ -209,10 +212,9 @@ export default {
 
       // ─── Shadows ─────────────────────────────────────────────────────────────
       boxShadow: {
-        card: "0 4px 16px rgba(0, 0, 0, 0.04)",
-        "card-hover": "0 4px 16px rgba(0, 0, 0, 0.08)",
-        "card-strong": "0 8px 32px rgba(0, 0, 0, 0.08)",
-        /** Matches `globals.css` `--shadow-float` (theme + `.dark` overrides). */
+        card: "var(--shadow-card)",
+        "card-hover": "var(--shadow-card-hover)",
+        "card-strong": "var(--shadow-card-strong)",
         float: "var(--shadow-float)",
       },
 

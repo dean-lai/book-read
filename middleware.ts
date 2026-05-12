@@ -2,7 +2,7 @@ import createMiddleware from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { routing } from "@/i18n/routing";
-import { updateSession } from "@/lib/supabase/proxy";
+import { updateSession } from "@/lib/supabase/middleware";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -12,7 +12,7 @@ function mergeCookies(target: NextResponse, source: NextResponse) {
   });
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const sessionResponse = await updateSession(request);
   const intlResponse = intlMiddleware(request);
 

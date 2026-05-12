@@ -1,4 +1,4 @@
-import { Bell, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { ThemeSwitcher } from "@/features/shell/components/theme-switcher";
 
 export function HomeHeaderSkeleton() {
   return (
@@ -90,16 +91,7 @@ export async function HomeHeader({ leading }: HomeHeaderProps) {
               </Button>
             </div>
           )}
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            className="shrink-0 text-ink"
-            aria-label={t("notificationsAria")}
-            disabled
-          >
-            <Bell className="size-5" />
-          </Button>
+          <ThemeSwitcher />
         </div>
       </div>
     </header>

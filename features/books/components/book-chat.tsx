@@ -250,9 +250,9 @@ export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
               role="dialog"
               aria-modal="true"
               aria-labelledby={`${panelId}-title`}
-              className="flex max-h-[min(72dvh,32rem)] w-full min-w-0 flex-col overflow-hidden border-hairline bg-surface-card/95 shadow-float backdrop-blur-sm"
+              className="flex max-h-[min(72dvh,32rem)] w-full min-w-0 flex-col overflow-hidden border border-hairline-strong bg-surface-card/95 shadow-float backdrop-blur-sm"
             >
-              <CardHeader className="shrink-0 space-y-0 border-b border-hairline p-md pb-sm">
+              <CardHeader className="shrink-0 space-y-0 border-b border-hairline-strong p-md pb-sm">
                 <div className="flex items-start justify-between gap-sm">
                   <CardTitle
                     id={`${panelId}-title`}
@@ -310,7 +310,7 @@ export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
                     ) : null}
 
                     <div
-                      className="min-h-0 flex-1 space-y-sm overflow-y-auto rounded-lg border border-hairline bg-canvas/40 p-sm"
+                      className="min-h-0 flex-1 space-y-sm overflow-y-auto rounded-lg border border-hairline-strong bg-canvas/40 p-sm"
                       role="log"
                       aria-live="polite"
                     >
@@ -334,7 +334,7 @@ export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
                               "max-w-[85%] rounded-lg px-sm py-xs text-body-sm leading-relaxed",
                               m.role === "user"
                                 ? "bg-primary text-primary-foreground"
-                                : "bg-muted text-muted-foreground",
+                                : "bg-muted text-foreground",
                             )}
                           >
                             <p className="whitespace-pre-wrap break-words">
@@ -365,7 +365,7 @@ export function BookChat({ bookId, isLoggedIn }: BookChatProps) {
                         placeholder={t("placeholder")}
                         rows={2}
                         disabled={isPending}
-                        className="min-h-14 flex-1 resize-none"
+                        className="min-h-14 flex-1 resize-none border-hairline-strong text-ink text-muted"
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && !e.shiftKey) {
                             e.preventDefault();

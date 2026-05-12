@@ -240,6 +240,47 @@
     "en": "English",
     "vi": "Tiếng Việt"
   },
+  "routeShell": {
+    "loading": {
+      "locale": "Đang tải…",
+      "admin": "Đang tải trang quản trị…",
+      "book": "Đang tải chi tiết sách…"
+    },
+    "error": {
+      "locale": {
+        "title": "Đã xảy ra lỗi",
+        "description": "Vui lòng thử lại. Nếu vẫn lỗi, hãy tải lại trang.",
+        "retry": "Thử lại"
+      },
+      "admin": {
+        "title": "Trang quản trị gặp lỗi",
+        "description": "Vui lòng tải lại trang.",
+        "retry": "Thử lại"
+      },
+      "book": {
+        "title": "Không thể mở sách này",
+        "description": "Vui lòng thử lại sau.",
+        "retry": "Thử lại"
+      }
+    },
+    "notFound": {
+      "locale": {
+        "title": "Không tìm thấy trang",
+        "description": "Trang bạn tìm không tồn tại.",
+        "link": "Về trang chủ"
+      },
+      "admin": {
+        "title": "Không tìm thấy trang quản trị",
+        "description": "Đường dẫn quản trị không tồn tại.",
+        "link": "Về bảng quản trị"
+      },
+      "book": {
+        "title": "Không tìm thấy sách",
+        "description": "Sách có thể đã bị xóa hoặc không tồn tại.",
+        "link": "Về thư viện"
+      }
+    }
+  },
   "protected": {
     "title": "Trang được bảo vệ",
     "body": "Trang này chỉ hiển thị với người dùng đã đăng nhập.",

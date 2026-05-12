@@ -9,8 +9,7 @@ import {
   HomeHeader,
   HomeHeaderSkeleton,
 } from "@/features/home/components/home-header";
-import { EnvVarWarning } from "@/features/marketing/components/env-var-warning";
-import { ThemeSwitcher } from "@/features/shell/components/theme-switcher";
+import { EnvVarWarning } from "@/features/shell/components/env-var-warning";
 import { hasEnvVars } from "@/lib/utils";
 import { listBooksWithCategory } from "@/server/books/repositories/books-repository";
 import { getHomeFavoritesBootstrap } from "@/server/favorites/services/book-favorites-service";
@@ -21,7 +20,6 @@ type HomePageProps = {
 };
 
 export default async function Home({ searchParams }: HomePageProps) {
-  const tFooter = await getTranslations("footer");
   const tHome = await getTranslations("home");
   const sp = await searchParams;
   const rawQ = sp.q;
@@ -64,25 +62,6 @@ export default async function Home({ searchParams }: HomePageProps) {
           <HomeBooksMainSection />
         </main>
       </HomeBooksSearchProvider>
-      <footer className="border-t border-hairline bg-surface-card py-lg">
-        <div className="mx-auto flex max-w-content flex-wrap items-center justify-center gap-md px-base text-caption text-brand-muted">
-          <p>
-            {tFooter.rich("poweredBy", {
-              s: (chunks) => (
-                <a
-                  href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-                  target="_blank"
-                  className="font-medium text-ink-primary underline-offset-4 hover:underline"
-                  rel="noreferrer"
-                >
-                  {chunks}
-                </a>
-              ),
-            })}
-          </p>
-          <ThemeSwitcher />
-        </div>
-      </footer>
     </div>
   );
 }

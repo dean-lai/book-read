@@ -240,6 +240,47 @@
     "en": "English",
     "vi": "Tiếng Việt"
   },
+  "routeShell": {
+    "loading": {
+      "locale": "Loading…",
+      "admin": "Loading admin…",
+      "book": "Loading book details…"
+    },
+    "error": {
+      "locale": {
+        "title": "Something went wrong",
+        "description": "Please try again. If the issue persists, refresh the page.",
+        "retry": "Try again"
+      },
+      "admin": {
+        "title": "Admin page crashed",
+        "description": "Try loading the page again.",
+        "retry": "Retry"
+      },
+      "book": {
+        "title": "Could not open this book",
+        "description": "Please try again in a moment.",
+        "retry": "Retry"
+      }
+    },
+    "notFound": {
+      "locale": {
+        "title": "Page not found",
+        "description": "The page you are looking for does not exist.",
+        "link": "Back to home"
+      },
+      "admin": {
+        "title": "Admin page not found",
+        "description": "The admin route you requested could not be found.",
+        "link": "Back to admin dashboard"
+      },
+      "book": {
+        "title": "Book not found",
+        "description": "This book may have been removed or never existed.",
+        "link": "Back to library"
+      }
+    }
+  },
   "protected": {
     "title": "Protected page",
     "body": "This page is only visible to authenticated users.",
