@@ -150,7 +150,6 @@ The app is usually available at [http://localhost:3000](http://localhost:3000). 
 | `GEMINI_MODEL` | No | Chat model override (default: `gemini-2.5-flash`). |
 | `GEMINI_EMBEDDING_MODEL` | No | Embedding model override (default: `gemini-embedding-2`). |
 | `DATABASE_POOL_MAX` | No | Max connections in the Node `pg` pool (default `5`, cap `20`). |
-| `OPENAI_API_KEY` | No | Listed in `.env.example` for convenience; the current codebase uses Gemini for embeddings, not OpenAI. |
 
 \*If these are missing, auth middleware skips Supabase session handling (`hasEnvVars` in `lib/utils.ts`), but most product flows expect them.
 
